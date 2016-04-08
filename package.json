@@ -1,0 +1,19 @@
+{
+  "name": "tessera",
+  "version": "1.0.0",
+  "description": "TESSERA ===============",
+  "main": "decomposite.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://btamas@bitbucket.org/Dressi/tessera.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/Dressi/tessera#readme",
+  "dependencies": {
+    "node-gd": "^1.2.0"
+  }
+}
