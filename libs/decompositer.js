@@ -23,7 +23,7 @@ class Decompositer {
     }
 
     _openImage(path) {
-        return gd.openFile(path);
+        return gd.openJpeg(path);
     }
 
     _createCanvas(x, y) {
