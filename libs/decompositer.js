@@ -1,11 +1,13 @@
 let gd = require('node-gd');
 
 class Decompositer {
-    constructor(imagePath, palette, compression) {
+    constructor(imagePath, palette, compression, imagesPath) {
         this.compression = compression || 1;
+        this.imagesPath = imagesPath;
         this.image = this._openImage(imagePath);
         this.palette = this._openPalette(palette);
         this.palette.trueColorToPalette(0);
+        this.sourceIndexes = [];
     }
 
     getDecompositedImage(output) {
@@ -110,12 +112,36 @@ class Decompositer {
                 var piece = map[y][x];
                 if (piece !== undefined) {
                     let level = Math.pow(2, map[y][x].level),
-                        color = map[y][x].color;
-                    image.filledRectangle(x * decompressRate, y * decompressRate, (x + level) * decompressRate, (y + level) * decompressRate, color);
+                        color = map[y][x].color,
+                        dx1 = x * decompressRate,
+                        dy1 = y * decompressRate,
+                        replaceImage = this._getImage(color);
+                    if (replaceImage) {
+                        replaceImage.copyResampled(image, dx1, dy1, 0, 0, level, level, 256, 256);
+                    }
+                    else {
+                        image.filledRectangle(dx1, dy1, (x + level) * decompressRate, (y + level) * decompressRate, color);
+                    }
                 }
             }
         }
         return image;
+    }
+
+    _getImage(index) {
+        try {
+            let sourceIndex = this.sourceIndexes[index] || 0;
+                image = this._openImage(`${this.imagesPath}/${index}/${sourceIndex}.jpg`);
+            this.sourceIndexes[index] = this.sourceIndexes[index] === undefined ? 1 : this.sourceIndexes[index]++;
+            return image;
+        }
+        catch(e) {
+            if (this.sourceIndexes[index]) {
+                this.sourceIndexes[index] = 0;
+                return this._getImage(index);
+            }
+            return false;
+        }
     }
 }
 
