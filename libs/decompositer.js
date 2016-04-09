@@ -1,4 +1,5 @@
-let gd = require('node-gd');
+let gd = require('node-gd'),
+    fs = require('fs');
 
 class Decompositer {
     constructor(imagePath, palette, compression, imagesPath) {
@@ -130,8 +131,10 @@ class Decompositer {
 
     _getImage(index) {
         try {
-            let sourceIndex = this.sourceIndexes[index] || 0;
-                image = this._openImage(`${this.imagesPath}/${index}/${sourceIndex}.jpg`);
+            let sourceIndex = this.sourceIndexes[index] || 0,
+                imagePath = `${this.imagesPath}/${index}/${sourceIndex}.jpg`;
+            fs.accessSync(imagePath);
+            let image = this._openImage(imagePath);
             this.sourceIndexes[index] = this.sourceIndexes[index] === undefined ? 1 : this.sourceIndexes[index]++;
             return image;
         }
