@@ -1,10 +1,11 @@
 let gd = require('node-gd');
 
 class Decompositer {
-    constructor(imagePath, colorCount, compression) {
-        this.colorCount = colorCount || 255;
+    constructor(imagePath, palette, compression) {
         this.compression = compression || 1;
         this.image = this._openImage(imagePath);
+        this.palette = this._openPalette(palette);
+        this.palette.trueColorToPalette(0);
     }
 
     getDecompositedImage(output) {
@@ -13,8 +14,6 @@ class Decompositer {
             compressedImage = this._resizeImage(this.image, compressionX, compressionY);
 
         compressedImage.saveJpeg('small.jpg');
-        this._reduceColorCount(compressedImage, this.colorCount);
-        compressedImage.saveJpeg('reduced.jpg');
         let compressedImagePixelMap = this._getImagePixelMap(compressedImage),
             decomposedImagePixelMap = this._decomposePixelMap(compressedImagePixelMap),
             decomposedImage = this._createCanvas(compressedImage.width * this.compression, compressedImage.height * this.compression);
@@ -22,8 +21,12 @@ class Decompositer {
         decomposedImage.saveJpeg(output);
     }
 
-    _openImage(path) {
+    _openImage(path, type) {
         return gd.openJpeg(path);
+    }
+
+    _openPalette(path) {
+        return gd.openPng(path);
     }
 
     _createCanvas(x, y) {
@@ -36,17 +39,18 @@ class Decompositer {
         return compressedImage;
     }
 
-    _reduceColorCount(image, colorCount) {
-        image.trueColorToPalette(0, colorCount);
-    }
-
     _getImagePixelMap(image) {
         let map = [];
         for (var y = 0; y < image.height; y++) {
             map[y] = [];
             for (var x = 0; x < image.width; x++) {
+                let color = image.getTrueColorPixel(x, y),
+                    r = (color >> 16) & 0xFF,
+                    g = (color >> 8) & 0xFF,
+                    b = color & 0xFF;
+                let paletteColor = this.palette.colorClosest(r,g,b);
                 map[y][x] = {
-                    color: image.getTrueColorPixel(x, y),
+                    color: paletteColor,
                     level: 0
                 }
             }
