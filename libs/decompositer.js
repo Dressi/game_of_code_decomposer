@@ -118,7 +118,7 @@ class Decompositer {
                         dy1 = y * decompressRate,
                         replaceImage = this._getImage(color);
                     if (replaceImage) {
-                        replaceImage.copyResampled(image, dx1, dy1, 0, 0, level, level, 256, 256);
+                        replaceImage.copyResampled(image, dx1, dy1, 0, 0, level*decompressRate, level*decompressRate, 256, 256);
                     }
                     else {
                         image.filledRectangle(dx1, dy1, (x + level) * decompressRate, (y + level) * decompressRate, color);
