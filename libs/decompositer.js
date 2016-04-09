@@ -135,7 +135,7 @@ class Decompositer {
                 imagePath = `${this.imagesPath}/${index}/${sourceIndex}.jpg`;
             fs.accessSync(imagePath);
             let image = this._openImage(imagePath);
-            this.sourceIndexes[index] = this.sourceIndexes[index] === undefined ? 1 : this.sourceIndexes[index]++;
+            this.sourceIndexes[index] = this.sourceIndexes[index] === undefined ? 1 : this.sourceIndexes[index]+1;
             return image;
         }
         catch(e) {
